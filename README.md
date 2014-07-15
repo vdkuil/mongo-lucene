@@ -18,7 +18,7 @@ The maven dependecy:
 
 ```xml
 <dependency>
-    <groupId>com.github.mongodbutils</groupId>
+    <groupId>com.github.mongoutils</groupId>
     <artifactId>mongo-lucene</artifactId>
     <version>1.0</version>
 </dependency>
