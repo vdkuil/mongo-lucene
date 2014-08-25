@@ -18,7 +18,7 @@ The maven dependecy:
 
 ```xml
 <dependency>
-    <groupId>com.github.mongodbutils</groupId>
+    <groupId>com.github.mongoutils</groupId>
     <artifactId>mongo-lucene</artifactId>
     <version>1.0</version>
 </dependency>
@@ -71,3 +71,7 @@ vagrant up
 ```
 
 Integration tests are done with https://github.com/joelittlejohn/embedmongo-maven-plugin.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rstiller/mongo-lucene/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
