@@ -8,9 +8,9 @@ Apache 2.0 License (http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Requirements / Dependencies
 
-* Java 1.6+ (http://www.java.com/de/download/)
-* Apache Lucene 3.6.1+ (http://lucene.apache.org)
-* MongoDB Java-Driver 2.8.0+ (https://github.com/mongodb/)
+* Java 1.7+ (http://www.java.com/de/download/)
+* Apache Lucene 4.9.0+ (http://lucene.apache.org)
+* MongoDB Java-Driver 2.12.2+ (https://github.com/mongodb/)
 
 ## How to get it
 
@@ -41,17 +41,17 @@ ConcurrentMap<String, MapDirectoryEntry> store = new MongoConcurrentMap<String, 
 Directory dir = new MapDirectory(store);
 
 // index files
-StandardAnalyzer analyser = new StandardAnalyzer(Version.LUCENE_36);
+StandardAnalyzer analyser = new StandardAnalyzer(Version.LUCENE_4_9);
 IndexWriter writer = new IndexWriter(dir, ...);
 Document doc = new Document();
-doc.add(new Field("title", "My file's content ...", Field.Store.YES, Field.Index.ANALYZED));
+doc.add(new TextField("title", "My file's content ...", Field.Store.YES));
 writer.addDocument(doc);
 writer.close();
 
 ...
 
 // search index
-Query q = new QueryParser(Version.LUCENE_36, "title", analyser).parse("My*content");
+Query q = new QueryParser(Version.LUCENE_4_9, "title", analyser).parse("My*content");
 IndexReader reader = IndexReader.open(dir);
 IndexSearcher searcher = new IndexSearcher(reader);
 TopScoreDocCollector collector = TopScoreDocCollector.create(10, true);
