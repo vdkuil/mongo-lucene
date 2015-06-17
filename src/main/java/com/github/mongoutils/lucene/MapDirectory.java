@@ -3,6 +3,7 @@ package com.github.mongoutils.lucene;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,22 +23,21 @@ public class MapDirectory extends BaseDirectory implements Accountable {
     }
 
     private MapDirectory(final ConcurrentMap<String, MapDirectoryEntry> store, final int bufferSize) throws IOException {
+        super(new SingleInstanceLockFactory());
         this.store = store;
         this.bufferSize = bufferSize;
-        if (lockFactory == null) {
-            setLockFactory(new SingleInstanceLockFactory());
-        }
+        //if (lockFactory == null) {
+        //    setLockFactory(new SingleInstanceLockFactory());
+        //}
     }
 
     /*public ConcurrentMap<String, MapDirectoryEntry> getStore() {
-        return store;
-    }*/
-
-    @Override
-    public String getLockID() {
-        return "lucene-" + Integer.toHexString(hashCode());
-    }
-
+     return store;
+     }*/
+    //@Override
+    //public String getLockID() {
+    //    return "lucene-" + Integer.toHexString(hashCode());
+    //}
     @Override
     public String[] listAll() throws IOException {
         String[] files = new String[store.size()];
@@ -50,12 +50,11 @@ public class MapDirectory extends BaseDirectory implements Accountable {
         return files;
     }
 
-    @Override
-    public boolean fileExists(final String name) throws IOException {
-        ensureOpen();
-        return store.containsKey(name);
-    }
-
+    //@Override
+    //public boolean fileExists(final String name) throws IOException {
+    //    ensureOpen();
+    //    return store.containsKey(name);
+    //}
 
     @Override
     public void deleteFile(final String name) throws IOException {
@@ -77,7 +76,6 @@ public class MapDirectory extends BaseDirectory implements Accountable {
         return store.get(name).getLength();
     }
 
-
     @Override
     public void close() throws IOException {
         isOpen = false;
@@ -89,9 +87,9 @@ public class MapDirectory extends BaseDirectory implements Accountable {
         ensureOpen();
         MapDirectoryEntry file = new MapDirectoryEntry();
         /*MapDirectoryEntry existing = store.remove(s);
-        if (existing != null) {
-            sizeInBytes.addAndGet(-existing.sizeInBytes);
-        }*/
+         if (existing != null) {
+         sizeInBytes.addAndGet(-existing.sizeInBytes);
+         }*/
         file.setBufferSize(bufferSize);
         store.put(s, file);
         return new MapDirectoryOutputStream(file, s, store, bufferSize);
@@ -100,18 +98,18 @@ public class MapDirectory extends BaseDirectory implements Accountable {
     @Override
     public void sync(Collection<String> names) throws IOException {
         /*ensureOpen();
-        MapDirectoryEntry file;
-        //Set<String> toSync = new HashSet<String>(names);
-        //toSync.retainAll(staleFiles);
-        for (String name : names) {
-            if (!store.containsKey(name)) {
-                throw new FileNotFoundException(name);
-            }
-            file = store.get(name);
-            file.setLastModified(System.currentTimeMillis());
-            store.put(name, file);
-        }
-*/
+         MapDirectoryEntry file;
+         //Set<String> toSync = new HashSet<String>(names);
+         //toSync.retainAll(staleFiles);
+         for (String name : names) {
+         if (!store.containsKey(name)) {
+         throw new FileNotFoundException(name);
+         }
+         file = store.get(name);
+         file.setLastModified(System.currentTimeMillis());
+         store.put(name, file);
+         }
+         */
 
     }
 
@@ -128,5 +126,17 @@ public class MapDirectory extends BaseDirectory implements Accountable {
     public long ramBytesUsed() {
         ensureOpen();
         return sizeInBytes.get();
+    }
+
+    @Override
+    public void renameFile(String source, String dest) throws IOException {
+        System.out.println("rename : "+ source +" -> "+ dest +" [ "+ this.store.keySet());
+        store.put(dest,  store.remove(source));
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Collection<Accountable> getChildResources() {
+        return Collections.EMPTY_LIST;
     }
 }

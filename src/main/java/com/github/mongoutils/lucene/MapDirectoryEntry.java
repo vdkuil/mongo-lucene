@@ -3,8 +3,9 @@ package com.github.mongoutils.lucene;
 import org.apache.lucene.util.Accountable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-
 
 public class MapDirectoryEntry implements Accountable {
 
@@ -70,5 +71,10 @@ public class MapDirectoryEntry implements Accountable {
     @Override
     public long ramBytesUsed() {
         return sizeInBytes;
+    }
+
+    @Override
+    public Collection<Accountable> getChildResources() {
+        return Collections.EMPTY_LIST;
     }
 }

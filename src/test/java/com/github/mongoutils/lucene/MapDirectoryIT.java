@@ -45,8 +45,8 @@ public class MapDirectoryIT extends AbstractMongoIT {
 
     @Test
     public void indexWorkspace() throws Exception {
-        StandardAnalyzer analyser = new StandardAnalyzer(Version.LUCENE_4_9);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
+        StandardAnalyzer analyser = new StandardAnalyzer(); //Version.LUCENE_5_2_0);
+        IndexWriterConfig iwc = new IndexWriterConfig(analyser);
 
         IndexWriter w = new IndexWriter(dir, iwc);
 
@@ -63,11 +63,11 @@ public class MapDirectoryIT extends AbstractMongoIT {
         w.close();
 
 
-        Query q = new QueryParser(Version.LUCENE_4_9, "title", analyser).parse("file*");
+        Query q = new QueryParser("title", analyser).parse("file*");
         IndexReader reader = DirectoryReader.open(dir);
         System.out.println("numdocs->" + reader.getDocCount("title"));
         IndexSearcher searcher = new IndexSearcher(reader);
-        TopScoreDocCollector collector = TopScoreDocCollector.create(10, true);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(10);
         searcher.search(q, collector);
         assertEquals(3, collector.getTotalHits());
 

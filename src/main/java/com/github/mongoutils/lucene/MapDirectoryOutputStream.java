@@ -1,6 +1,8 @@
 package com.github.mongoutils.lucene;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentMap;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -25,9 +27,10 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
     String name;
 
     public MapDirectoryOutputStream(final MapDirectoryEntry f,
-                                    final String name,
-                                    final ConcurrentMap<String, MapDirectoryEntry> map,
-                                    final int bufferSize) {
+            final String name,
+            final ConcurrentMap<String, MapDirectoryEntry> map,
+            final int bufferSize) {
+        super(name);
         file = f;
         this.name = name;
         this.map = map;
@@ -38,40 +41,40 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
     }
 
     /*public void writeTo(final IndexOutput out) throws IOException {
-        flush();
-        final long end = file.length;
-        long pos = 0;
-        int buffer = 0;
-        while (pos < end) {
-            int length = bufferSize;
-            long nextPos = pos + length;
-            if (nextPos > end) {
-                length = (int) (end - pos);
-            }
-            out.writeBytes(file.getBuffer(buffer++), length);
-            pos = nextPos;
-        }
-        dirty = true;
-    }
+     flush();
+     final long end = file.length;
+     long pos = 0;
+     int buffer = 0;
+     while (pos < end) {
+     int length = bufferSize;
+     long nextPos = pos + length;
+     if (nextPos > end) {
+     length = (int) (end - pos);
+     }
+     out.writeBytes(file.getBuffer(buffer++), length);
+     pos = nextPos;
+     }
+     dirty = true;
+     }
 
-    public void writeTo(byte[] bytes, int offset) throws IOException {
-        flush();
-        final long end = file.length;
-        long pos = 0;
-        int buffer = 0;
-        int bytesUpto = offset;
-        while (pos < end) {
-            int length = bufferSize;
-            long nextPos = pos + length;
-            if (nextPos > end) {                        // at the last buffer
-                length = (int) (end - pos);
-            }
-            System.arraycopy(file.getBuffer(buffer++), 0, bytes, bytesUpto, length);
-            bytesUpto += length;
-            pos = nextPos;
-        }
-    }
-*/
+     public void writeTo(byte[] bytes, int offset) throws IOException {
+     flush();
+     final long end = file.length;
+     long pos = 0;
+     int buffer = 0;
+     int bytesUpto = offset;
+     while (pos < end) {
+     int length = bufferSize;
+     long nextPos = pos + length;
+     if (nextPos > end) {                        // at the last buffer
+     length = (int) (end - pos);
+     }
+     System.arraycopy(file.getBuffer(buffer++), 0, bytes, bytesUpto, length);
+     bytesUpto += length;
+     pos = nextPos;
+     }
+     }
+     */
     public void reset() {
         currentBuffer = null;
         currentBufferIndex = -1;
@@ -80,7 +83,7 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
         bufferLength = 0;
         file.setLength(0);
 
-            crc.reset();
+        crc.reset();
 
     }
 
@@ -98,7 +101,7 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
             switchCurrentBuffer();
         }
 
-            crc.update(b);
+        crc.update(b);
 
         currentBuffer[bufferPosition++] = b;
         //System.out.println("writeByte->"+b);
@@ -109,7 +112,7 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
     public void writeBytes(final byte[] b, int offset, int len) throws IOException {
         assert b != null;
 
-            crc.update(b, offset, len);
+        crc.update(b, offset, len);
 
         while (len > 0) {
             if (bufferPosition == bufferLength) {
@@ -123,7 +126,7 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
             offset += bytesToCopy;
             len -= bytesToCopy;
             bufferPosition += bytesToCopy;
-           // System.out.println("writeBytes->"+bytesToCopy);
+            // System.out.println("writeBytes->"+bytesToCopy);
         }
 
         dirty = true;
@@ -147,8 +150,8 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
         }
     }
 
-    @Override
-    public void flush() throws IOException {
+    //@Override
+    private void flush() throws IOException {
         file.setLastModified(System.currentTimeMillis());
         setFileLength();
         map.put(name, file);
@@ -164,9 +167,9 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
     public long ramBytesUsed() {
         return (long) file.numBuffers() * (long) bufferSize;
     }
-   /* public long sizeInBytes() {
-        return file.numBuffers() * bufferSize;
-    }*/
+    /* public long sizeInBytes() {
+     return file.numBuffers() * bufferSize;
+     }*/
 
     @Override
     public void copyBytes(final DataInput input, long numBytes) throws IOException {
@@ -196,5 +199,10 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
         } else {
             return crc.getValue();
         }
+    }
+
+    @Override
+    public Collection<Accountable> getChildResources() {
+        return Collections.EMPTY_LIST;
     }
 }
