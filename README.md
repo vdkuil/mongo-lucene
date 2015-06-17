@@ -20,7 +20,7 @@ The maven dependecy:
 <dependency>
     <groupId>com.github.mongoutils</groupId>
     <artifactId>mongo-lucene</artifactId>
-    <version>1.0</version>
+    <version>1.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -41,8 +41,9 @@ ConcurrentMap<String, MapDirectoryEntry> store = new MongoConcurrentMap<String, 
 Directory dir = new MapDirectory(store);
 
 // index files
-StandardAnalyzer analyser = new StandardAnalyzer(Version.LUCENE_4_9);
-IndexWriter writer = new IndexWriter(dir, ...);
+StandardAnalyzer analyser = new StandardAnalyzer();
+IndexWriterConfig config = new IndexWriterConfig(analyser);
+IndexWriter writer = new IndexWriter(dir, config);
 Document doc = new Document();
 doc.add(new TextField("title", "My file's content ...", Field.Store.YES));
 writer.addDocument(doc);
@@ -51,7 +52,7 @@ writer.close();
 ...
 
 // search index
-Query q = new QueryParser(Version.LUCENE_4_9, "title", analyser).parse("My*content");
+Query q = new QueryParser("title", analyser).parse("My*content");
 IndexReader reader = IndexReader.open(dir);
 IndexSearcher searcher = new IndexSearcher(reader);
 TopScoreDocCollector collector = TopScoreDocCollector.create(10, true);
