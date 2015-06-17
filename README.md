@@ -9,8 +9,8 @@ Apache 2.0 License (http://www.apache.org/licenses/LICENSE-2.0)
 ## Requirements / Dependencies
 
 * Java 1.7+ (http://www.java.com/de/download/)
-* Apache Lucene 4.9.0+ (http://lucene.apache.org)
-* MongoDB Java-Driver 2.12.2+ (https://github.com/mongodb/)
+* Apache Lucene 5.2.0+ (http://lucene.apache.org)
+* MongoDB Java-Driver 3.0.0+ (https://github.com/mongodb/)
 
 ## How to get it
 
